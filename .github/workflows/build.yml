@@ -44,7 +44,7 @@ jobs:
           </plist>
           EOF
       
-      - name: Create App Structure
+      - name: Build App
         run: |
           cp App.swift IMRAN.swift
           mkdir -p Payload/IMRAN.app
@@ -52,6 +52,7 @@ jobs:
           chmod +x Payload/IMRAN.app/IMRAN
           cp Info.plist Payload/IMRAN.app/
           zip -r IMRAN.ipa Payload
+          ls -la IMRAN.ipa
           
       - name: Upload IPA
         uses: actions/upload-artifact@v4
