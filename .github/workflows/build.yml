@@ -1,0 +1,60 @@
+name: Build IPA
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Create Info.plist
+        run: |
+          cat > Info.plist << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>CFBundleIdentifier</key>
+            <string>com.imran.ai</string>
+            <key>CFBundleName</key>
+            <string>IMRAN</string>
+            <key>CFBundleDisplayName</key>
+            <string>IMRAN.Ai</string>
+            <key>CFBundleVersion</key>
+            <string>1.0</string>
+            <key>CFBundleShortVersionString</key>
+            <string>1</string>
+            <key>CFBundleExecutable</key>
+            <string>IMRAN</string>
+            <key>CFBundlePackageType</key>
+            <string>APPL</string>
+            <key>LSRequiresIPhoneOS</key>
+            <true/>
+            <key>UILaunchScreen</key>
+            <dict/>
+            <key>UIRequiredDeviceCapabilities</key>
+            <array><string>armv7</string></array>
+            <key>UISupportedInterfaceOrientations</key>
+            <array><string>UIInterfaceOrientationPortrait</string></array>
+          </dict>
+          </plist>
+          EOF
+      
+      - name: Create App Structure
+        run: |
+          cp App.swift IMRAN.swift
+          mkdir -p Payload/IMRAN.app
+          echo "#!/bin/bash" > Payload/IMRAN.app/IMRAN
+          chmod +x Payload/IMRAN.app/IMRAN
+          cp Info.plist Payload/IMRAN.app/
+          zip -r IMRAN.ipa Payload
+          
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: IMRAN-Ai
+          path: IMRAN.ipa
